@@ -21,8 +21,7 @@ const InputTask = ({ onSendTask }) => {
                     <div className="task-body-enter">
                         <p>Введите текст задачи: </p>
                         <textarea
-                            id="w3review"
-                            name="w3review"
+                            name="text"
                             rows="4"
                             value={text}
                             onChange={handleChangeText}

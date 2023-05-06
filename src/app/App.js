@@ -7,83 +7,75 @@ import tasksService from "./services/tasks.service";
 function App() {
     const [tasks, setTasks] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalTask, setTotalTask] = useState("");
+    const [totalTask, setTotalTask] = useState(0);
 
     useEffect(() => {
-        // const temp = async () => {
         const temp = async () => {
             try {
-                const data = await tasksService.fetchAll(currentPage);
+                const data = await tasksService.fetchAll(1);
                 setTasks(data.data);
                 setTotalTask(data.total);
             } catch (error) {
-                console.log("error", error);
+                console.log("error: ", error);
             }
         };
         temp();
     }, []);
 
-    console.log("tasks: ", tasks);
-
-    function handleImportant(target) {
-        console.log(target.target.id);
-        const item = tasks.find((el) => el.id === Number(target.target.id));
-        console.log(Date.parse(item.created_at));
+    function handleImportant(id) {
+        const item = tasks.find((el) => el.id === id);
 
         if (item) {
             item.important = !item.important;
 
             if (item.important) {
                 item.priority += 2;
-                tasksService.important(Number(target.target.id));
+                tasksService.important(id);
             } else {
                 item.priority -= 2;
-
-                tasksService.notImportant(Number(target.target.id));
+                tasksService.notImportant(id);
             }
+
+            setTasks((prevState) => {
+                const mass = prevState.filter((el) => el.id !== id);
+                mass.push(item);
+                mass.sort(
+                    (a, b) =>
+                        Date.parse(a.created_at) - Date.parse(b.created_at)
+                );
+                mass.sort((a, b) => b.priority - a.priority);
+
+                return mass;
+            });
         }
-
-        setTasks((prevState) => {
-            const mass = prevState.filter(
-                (el) => el.id !== Number(target.target.id)
-            );
-            mass.push(item);
-            mass.sort(
-                (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)
-            );
-            mass.sort((a, b) => b.priority - a.priority);
-
-            return mass;
-        });
     }
-    function handleUrgent(target) {
-        console.log(target.target.id);
-        const item = tasks.find((el) => el.id === Number(target.target.id));
+    function handleUrgent(id) {
+        const item = tasks.find((el) => el.id === id);
 
         if (item) {
             item.urgent = !item.urgent;
 
             if (item.urgent) {
                 item.priority += 1;
-                tasksService.urgent(Number(target.target.id));
+                tasksService.urgent(id);
             } else {
                 item.priority -= 1;
 
-                tasksService.notUrgent(Number(target.target.id));
+                tasksService.notUrgent(id);
             }
-        }
-        setTasks((prevState) => {
-            const mass = prevState.filter(
-                (el) => el.id !== Number(target.target.id)
-            );
-            mass.push(item);
-            mass.sort(
-                (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)
-            );
-            mass.sort((a, b) => b.priority - a.priority);
 
-            return mass;
-        });
+            setTasks((prevState) => {
+                const mass = prevState.filter((el) => el.id !== id);
+                mass.push(item);
+                mass.sort(
+                    (a, b) =>
+                        Date.parse(a.created_at) - Date.parse(b.created_at)
+                );
+                mass.sort((a, b) => b.priority - a.priority);
+
+                return mass;
+            });
+        }
     }
     function handleDelete(id) {
         tasksService.deleteTask(id);
@@ -116,8 +108,6 @@ function App() {
         }
     }
     async function handleGetTask() {
-        console.log(currentPage);
-
         try {
             setCurrentPage((prevState) => prevState + 1);
 

@@ -5,10 +5,6 @@ const http = axios.create({
     baseURL: configFile.apiEndpoint
 });
 
-// http.interceptors.request.use(function (error) {
-//     return Promise.reject(error);
-// })
-
 const httpService = {
     get: http.get,
     post: http.post,

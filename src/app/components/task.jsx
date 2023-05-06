@@ -18,6 +18,14 @@ const Task = ({
     const [isDelete, setIsDelete] = useState(false);
     const [isComplete, setisComplete] = useState(false);
 
+    const handleImportant = () => {
+        onImportant(id);
+    };
+
+    const handleUrgent = () => {
+        onUrgent(id);
+    };
+
     const handleDelete = () => {
         onDelete(id);
         setIsDelete(true);
@@ -95,7 +103,7 @@ const Task = ({
                         <div className="form-check">
                             <input
                                 type="checkbox"
-                                onChange={onImportant}
+                                onChange={handleImportant}
                                 defaultChecked={taskImportant}
                                 name="taskFavorite"
                                 id={id}
@@ -103,7 +111,7 @@ const Task = ({
                             <label htmlFor="taskFavorite">Важное</label>{" "}
                             <input
                                 type="checkbox"
-                                onChange={onUrgent}
+                                onChange={handleUrgent}
                                 defaultChecked={taskUrgent}
                                 name="taskFavorite"
                                 id={id}
